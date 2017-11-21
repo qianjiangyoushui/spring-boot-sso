@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8080
   tomcat:
     uri-encoding: UTF-8
 
@@ -21,7 +21,7 @@ security:
 
 securityconfig:
   logoutsuccssurl: /tosignout
-  permitall: /rest/**,/re**
+  permitall: /rest/**,/re**,/weapp/**
   deniedpage: /deny
   urlroles: /**/new/** = admin;
             /**/edit/** = admin,editor;

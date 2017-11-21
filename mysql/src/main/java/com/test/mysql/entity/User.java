@@ -19,6 +19,9 @@ public class User implements java.io.Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdate;
     private String password;
+    private String nicename;
+    private String openid;
+    private String skey;
 
     @ManyToOne
     @JoinColumn(name = "did")
@@ -96,5 +99,29 @@ public class User implements java.io.Serializable{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getNicename() {
+        return nicename;
+    }
+
+    public void setNicename(String nicename) {
+        this.nicename = nicename;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public String getSkey() {
+        return skey;
+    }
+
+    public void setSkey(String skey) {
+        this.skey = skey;
     }
 }
