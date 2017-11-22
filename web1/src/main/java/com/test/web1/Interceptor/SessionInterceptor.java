@@ -25,7 +25,7 @@ public class SessionInterceptor implements HandlerInterceptor {
         logger.info("sessionInterceptor executed");
         String sessionKey = httpServletRequest.getHeader(Constants.WX_HEADER_SKEY);
         if("".equals(sessionKey)||sessionKey==null){
-            return true;
+            return false;
         }else{
             //sessionInfoService = (SessionInfoService) SpringApplicationContextHolder.getSpringBean("sessionInfoService");
             SessionInfo sessionInfo= sessionInfoService.getSessionInfoBySessionkey(sessionKey);
