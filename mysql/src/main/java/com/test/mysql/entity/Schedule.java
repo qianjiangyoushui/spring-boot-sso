@@ -29,7 +29,7 @@ public class Schedule implements java.io.Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date publishdate;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy/MM/dd")
     private Date createdate;
 
     @ManyToOne

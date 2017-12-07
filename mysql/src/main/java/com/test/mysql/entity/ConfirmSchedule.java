@@ -20,6 +20,9 @@ public class ConfirmSchedule implements java.io.Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdate;
 
+    @ManyToOne
+    @JoinColumn(name="scheduleid")
+    @JsonBackReference
     private Schedule schedule;
 
     @ManyToOne

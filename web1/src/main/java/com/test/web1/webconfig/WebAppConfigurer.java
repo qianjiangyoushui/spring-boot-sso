@@ -20,10 +20,10 @@ public class WebAppConfigurer extends WebMvcConfigurerAdapter {
         // excludePathPatterns 用户排除拦截
         HandlerInterceptor interceptor = getMyInterceptor();
         InterceptorRegistration addInterceptor = registry.addInterceptor(interceptor);
-        addInterceptor.addPathPatterns("/**");
-        addInterceptor.excludePathPatterns("/*/login");
-        addInterceptor.excludePathPatterns("/**.html");
-        addInterceptor.excludePathPatterns("/");
+        addInterceptor.addPathPatterns("/weapp/**");
+//        addInterceptor.excludePathPatterns("/*/login");
+//        addInterceptor.excludePathPatterns("/**.html");
+//        addInterceptor.excludePathPatterns("/");
         super.addInterceptors(registry);
     }
 

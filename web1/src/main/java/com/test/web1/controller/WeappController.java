@@ -2,8 +2,11 @@ package com.test.web1.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.Base64;
-import com.test.mysql.entity.AppInfo;
-import com.test.mysql.entity.SessionInfo;
+import com.test.mysql.entity.*;
+import com.test.mysql.model.FertilizationQo;
+import com.test.mysql.model.WeatherQo;
+import com.test.mysql.repository.FertilizationRepository;
+import com.test.mysql.repository.WeatherRepository;
 import com.test.web1.constant.Constants;
 import com.test.web1.constant.ReturnCodeType;
 import com.test.web1.service.AppInfoService;
@@ -13,6 +16,10 @@ import com.test.web1.utils.DecryptDataUtil;
 import com.test.web1.utils.HttpsRequestUtil;
 import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -21,9 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -33,12 +43,65 @@ public class WeappController {
     private AppInfoService appInfoService;
     @Autowired
     private SessionInfoService sessionInfoService;
+    @Autowired
+    private FertilizationRepository fertilizationRepository;
+    @Autowired
+    private WeatherRepository weatherRepository;
     @RequestMapping("/userinfo")
     public @ResponseBody String getUserinfo(HttpServletRequest request){
         String skey=request.getHeader(Constants.WX_HEADER_SKEY);
         String name1 = request.getParameter("name");
         SessionInfo sessionInfo = sessionInfoService.getSessionInfoBySessionkey(skey);
         return JSONObject.toJSONString(sessionInfo);
+    }
+    @RequestMapping("/fertilization")
+    public @ResponseBody String fertalizatinlist(HttpServletRequest request){
+        String skey=request.getHeader(Constants.WX_HEADER_SKEY);
+        String name = request.getParameter("size");
+        BigDecimal size = BigDecimal.ZERO;
+        try{
+             size = new BigDecimal(name);
+        }catch(Exception e){
+            JSONObject result = new JSONObject();
+            result.put("state","0");
+            return result.toString();
+        }
+        FertilizationQo fertilizationQo = new FertilizationQo();
+        fertilizationQo.setSize(100);
+        Pageable pageable = new PageRequest(fertilizationQo.getPage(), fertilizationQo.getSize(), new Sort(Sort.Direction.ASC, "id"));
+        JSONObject result = new JSONObject();
+        Page<FertilizationCalculate> pageList = fertilizationRepository.findByState(0,pageable);
+        List<FertilizationCalculate> resultList = new ArrayList<FertilizationCalculate>();
+        for (FertilizationCalculate object:pageList.getContent()){
+            object.setSum(size.multiply(object.getVolume()).setScale(2));
+            resultList.add(object);
+        }
+        result.put("content",resultList);
+        result.put("total",pageList.getTotalElements());
+        result.put("page",pageList.getTotalPages());
+        result.put("size",pageList.getSize());
+        result.put("state","1");
+        /*String re = result.toString();
+        String re1 = result.toJSONString();*/
+        return result.toString();
+    }
+    @RequestMapping("/weather")
+    public @ResponseBody String weather(HttpServletRequest request){
+        String skey=request.getHeader(Constants.WX_HEADER_SKEY);
+        String country = request.getParameter("country");
+        WeatherQo weatherQo = new WeatherQo();
+        weatherQo.setSize(100);
+        Pageable pageable = new PageRequest(weatherQo.getPage(), weatherQo.getSize(), new Sort(Sort.Direction.ASC, "id"));
+        JSONObject result = new JSONObject();
+        Page<WeatherData> pageList = weatherRepository.findBycountry(country,pageable);
+        result.put("content",pageList.getContent());
+        result.put("total",pageList.getTotalElements());
+        result.put("page",pageList.getTotalPages());
+        result.put("size",pageList.getSize());
+        result.put("state","1");
+        /*String re = result.toString();
+        String re1 = result.toJSONString();*/
+        return result.toString();
     }
 
     @RequestMapping("/login")
